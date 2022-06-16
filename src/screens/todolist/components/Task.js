@@ -1,10 +1,12 @@
 import { View, Text, Pressable, Image, StyleSheet, Share, Alert } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
+import useTodo from '../../../hooks/useTodo';
 
 export default function Task({ task, index, list, setList }) {
 
   const navigation = useNavigation();
+  const { checked, deleteTask } = useTodo()
 
   let styleLevel
 
@@ -16,27 +18,13 @@ export default function Task({ task, index, list, setList }) {
     styleLevel = styles.useless
   }
 
-  const checked = () => {
-    let newStatus = null
-    if (task.status === 0) {
-      newStatus = 1
-    } else {
-      newStatus = 0
-    }
-    const updateTask = {
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      status: newStatus,
-      image: task.image,
-      level: task.level
-    }
-    list.splice(index, 1, updateTask)
-    setList(list)
+  const valid = () => {
+    const newList = checked(task, list, index)
+    setList(newList)
   }
 
-  const deleteTask = () => {
-    const newList = list.filter(function(item, i) { return i !== index })
+  const removeTask = () => {
+    const newList = deleteTask(list, index)
     setList(newList)
   }
 
@@ -74,7 +62,7 @@ export default function Task({ task, index, list, setList }) {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={checked}>
+      <Pressable onPress={valid}>
         <View style={styles.subContainer}>
           <Image 
             style={styles.icon}
@@ -98,7 +86,7 @@ export default function Task({ task, index, list, setList }) {
             source={require('../../../../assets/icons/detail.png')}
           />
         </Pressable>
-        <Pressable onPress={deleteTask} style={{ marginLeft: 10 }}>
+        <Pressable onPress={removeTask} style={{ marginLeft: 10 }}>
           <Image 
             style={styles.icon}
             source={require('../../../../assets/icons/trash.png')}
