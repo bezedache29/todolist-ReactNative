@@ -3,6 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import AppRouter from './src/router/AppRouter';
 import { useFonts } from 'expo-font';
 import { ActivityIndicator } from 'react-native';
+import { StoreProvider } from 'easy-peasy'
+import GlobalStore from './src/store/store.js'
 
 export default function App() {
 
@@ -20,10 +22,12 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <AppRouter />
-      <StatusBar style="auto" />
-    </View>
+    <StoreProvider store={GlobalStore}>
+      <View style={styles.container}>
+        <AppRouter />
+        <StatusBar style="auto" />
+      </View>
+    </StoreProvider>
   );
 }
 

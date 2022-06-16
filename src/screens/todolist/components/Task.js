@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Image, StyleSheet, Share, Alert } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import useTodo from '../../../hooks/useTodo';
 
@@ -18,19 +18,29 @@ export default function Task({ task, index, list, setList }) {
     styleLevel = styles.useless
   }
 
-  const valid = () => {
+  // const valid = () => {
+  //   const newList = checked(task, list, index)
+  //   setList(newList)
+  // }
+
+  const valid = useCallback(() => {
     const newList = checked(task, list, index)
     setList(newList)
-  }
+  })
 
-  const removeTask = () => {
+  // const removeTask = () => {
+  //   const newList = deleteTask(list, index)
+  //   setList(newList)
+  // }
+
+  const removeTask = useCallback(() => {
     const newList = deleteTask(list, index)
     setList(newList)
-  }
+  })
 
-  const detail = () => {
+  const detail = useCallback(() => {
     navigation.navigate('tododetail', {task, index, list})
-  }
+  })
 
   const share = async () => {
     try {

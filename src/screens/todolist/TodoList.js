@@ -1,42 +1,60 @@
 import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Task from './components/Task'
 import Compteur from './components/Compteur'
 import TaskForm from './components/TaskForm'
+import { useStoreActions, useStoreState } from 'easy-peasy'
 
-const myList = [
-  {
-    id: 1,
-    title: 'Ma première tâche',
-    description: 'Description de ma première tâche',
-    image: 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
-    status: 0,
-    level: 0
-  },
-  {
-    id: 2,
-    title: 'Ma seconde tâche',
-    description: 'Description de ma seconde tâche',
-    image: 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
-    status: 0,
-    level: 2
-  },
-  {
-    id: 3,
-    title: 'Ma troisième tâche',
-    description: 'Description de ma troisième tâche',
-    image: 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
-    status: 0,
-    level: 1
-  },
-]
+// const myList = [
+//   {
+//     id: 1,
+//     title: 'Ma première tâche',
+//     description: 'Description de ma première tâche',
+//     image: 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+//     status: 0,
+//     level: 0
+//   },
+//   {
+//     id: 2,
+//     title: 'Ma seconde tâche',
+//     description: 'Description de ma seconde tâche',
+//     image: 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+//     status: 0,
+//     level: 2
+//   },
+//   {
+//     id: 3,
+//     title: 'Ma troisième tâche',
+//     description: 'Description de ma troisième tâche',
+//     image: 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+//     status: 0,
+//     level: 1
+//   },
+// ]
 
 export default function TodoList({ navigation, route }) {
 
-  const [list, setList] = useState(myList)
+  const [list, setList] = useState([])
+  const todolistActions = useStoreActions((actions) => actions.todolist) // Action Todolist
+  const todolistStore = useStoreState((state) => state.todolist) // Store Todolist
+  const todolist = todolistStore.todolist // Tableau todolist dans store todolist
 
   const [showForm, setShowForm] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [addTodo, setAddTodo] = useState(false)
+  const [reload, setReload] = useState(false)
+
+  useEffect(() => {
+    setList(todolist)
+  }, [])
+
+  useEffect(() => {
+    if (addTodo || reload) {
+      setList(todolist)
+      setAddTodo(false)
+      setReload(false)
+    }
+  }, [addTodo, reload])
 
   const openForm = () => {
     setShowForm(!showForm)
@@ -47,7 +65,7 @@ export default function TodoList({ navigation, route }) {
   }
 
   // Reset List
-  const onRefresh = () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true)
     setTimeout(() => {
       // setList((list) => [
@@ -61,10 +79,11 @@ export default function TodoList({ navigation, route }) {
       //     level: 1
       //   }
       // ])
-      setList(myList)
+      todolistActions.resetTodolist()
+      setReload(true)
       setRefreshing(false)
     }, 2000)
-  }
+  })
 
   useEffect(() => {
     if (route.params && route.params.deleteTask) {
@@ -105,7 +124,7 @@ export default function TodoList({ navigation, route }) {
             <View style={styles.containerHeader}>
               <Text style={styles.titleHeader}>Ma Todo List</Text>
             </View>
-            {showForm && <TaskForm list={list} setList={setList} showForm={showForm} setShowForm={setShowForm} />}
+            {showForm && <TaskForm list={list} setAddTodo={setAddTodo} showForm={showForm} setShowForm={setShowForm} />}
             <View style={styles.containerCpts}>
               <Compteur position={'left'} title={'Total tâches'} nb={list.length} />
               <Compteur position={'right'} title={'Tâches réalisées'} nb={list.filter(task => task.status === 1).length} />

@@ -2,8 +2,9 @@ import { View, Text, Modal, Alert, Pressable, StyleSheet, TextInput, TouchableOp
 import React, { useState } from 'react'
 import SelectDropdown from 'react-native-select-dropdown'
 import * as ImagePicker from 'expo-image-picker';
+import { useStoreActions } from 'easy-peasy';
 
-export default function TaskForm({ list, setList, showForm, setShowForm }) {
+export default function TaskForm({ list, setAddTodo, showForm, setShowForm }) {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -11,6 +12,8 @@ export default function TaskForm({ list, setList, showForm, setShowForm }) {
   const [image, setImage] = useState(null)
 
   const level = ['Normal', 'Urgent', 'Inutile']
+
+  const todolistActions = useStoreActions((actions) => actions.todolist)
 
   const handleText = (value) => {
     setTitle(value)
@@ -21,8 +24,17 @@ export default function TaskForm({ list, setList, showForm, setShowForm }) {
   }
 
   const addTask = () => {
-    const newId = Number(list[list.length - 1].id) + 1
-    setList((list) => [...list, {id: newId, title, description, image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg', status: 0, level: levelSelect}])
+    const newId = list.length === 0 ? 1 : (Number(list[list.length - 1].id) + 1)
+    todolistActions.addTodo({
+      id: newId,
+      title,
+      description,
+      image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+      status: 0,
+      level: levelSelect
+    })
+    setAddTodo(true)
+    // setList((list) => [...list, {id: newId, title, description, image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg', status: 0, level: levelSelect}])
     setTitle('')
     setShowForm(false)
   }
