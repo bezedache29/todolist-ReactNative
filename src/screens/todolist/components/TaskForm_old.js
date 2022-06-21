@@ -28,35 +28,38 @@ export default function TaskForm({ list, setAddTodo, showForm, setShowForm }) {
   }
 
   const addTask = async () => {
-
-    const todo = {
+    const newId = list.length === 0 ? 1 : (Number(list[list.length - 1].id) + 1)
+    todolistActions.addTodo({
+      id: newId,
       title,
       description,
       image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
       status: 0,
       level: levelSelect,
-      userId: user.uid,
-      timestamp: new Date().getTime(),
-      createdAt: new Date(),
-    }
+      userId: user.uid
+    })
+    setAddTodo(true)
+    // setList((list) => [...list, {id: newId, title, description, image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg', status: 0, level: levelSelect}])
+    setTitle('')
+    setShowForm(false)
 
     try {
-      const docRef = await addDoc(collection(db, "todos"), todo);
+      const docRef = await addDoc(collection(db, "todos"), {
+        id: newId,
+        title,
+        description,
+        image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+        status: 0,
+        level: levelSelect,
+        userId: user.uid,
+        timestamp: new Date().getTime(),
+        createdAt: new Date(),
+      });
       console.log("Document written with ID: ", docRef.id);
-      setAddTodo(true)
-      resetInputs()
-      setShowForm(false)
-      todolistActions.addTodo(todo)
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-  }
-
-  const resetInputs = () => {
-    setTitle('')
-    setDescription('')
-    setLevelSelect(0)
-    setImage(null)
+    
   }
 
   const pickImage = async () => {

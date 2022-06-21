@@ -5,8 +5,11 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../../firebase'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
+import { useStoreActions } from 'easy-peasy'
 
 export default function Login({ navigation, route }) {
+
+  const userActions = useStoreActions((actions) => actions.user)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -33,6 +36,7 @@ export default function Login({ navigation, route }) {
       }
       const token = JWT.encode({ user: user }, process.env.REACT_APP_TOKEN, { algorithm: 'HS512' })
       await AsyncStorage.setItem('token', token)
+      userActions.loadUser(userFb)
       navigation.reset({
         index: 0,
         routes: [{name: 'tab-todolist'}]

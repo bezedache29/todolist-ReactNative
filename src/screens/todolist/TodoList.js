@@ -4,37 +4,60 @@ import Task from './components/Task'
 import Compteur from './components/Compteur'
 import TaskForm from './components/TaskForm'
 import { useStoreActions, useStoreState } from 'easy-peasy'
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore"
+import { db } from '../../../firebase'
 
 export default function TodoList({ navigation, route }) {
 
-  const [list, setList] = useState([])
+  // STORE
   const todolistActions = useStoreActions((actions) => actions.todolist) // Action Todolist
   const todolistStore = useStoreState((state) => state.todolist) // Store Todolist
   const todolist = todolistStore.todolist // Tableau todolist dans store todolist
+  const userStore = useStoreState((state) => state.user)
+  const user = userStore.user
 
+  const [list, setList] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [addTodo, setAddTodo] = useState(false)
   const [reload, setReload] = useState(false)
+  const [deleted, setDeleted] = useState(false)
 
   useEffect(() => {
-    setList(todolist)
+    todolistFromDB()
+    // console.log('user', user)
   }, [])
 
   useEffect(() => {
-    if (addTodo || reload) {
-      setList(todolist)
+    if (addTodo || reload || deleted) {
+      todolistFromDB()
       setAddTodo(false)
       setReload(false)
     }
-  }, [addTodo, reload])
+  }, [addTodo, reload, deleted])
+
+  const todolistFromDB = async () => {
+    let todoListTemp = []
+    console.log('userId', user.uid)
+    const q = query(collection(db, "todos"), where("userId", "==", user.uid), orderBy("timestamp", "desc"))
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((todo) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(todo.id)
+      let data = todo.data()
+      data.docId = todo.id
+      todoListTemp.push(data)
+    })
+    setList(todoListTemp)
+  }
 
   const openForm = () => {
     setShowForm(!showForm)
   }
 
   const renderItem = ({ item, index }) => {
-    return <Task task={item} index={index} list={[...list]} setList={setList} />
+    console.log('item', item)
+    return <Task setDeleted={setDeleted} task={item} index={index} list={[...list]} setList={setList} />
   }
 
   // Reset List
