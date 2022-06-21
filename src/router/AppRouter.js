@@ -1,24 +1,55 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import TodoList from '../screens/todolist/TodoList';
-import SplashScreen from '../screens/SplashScreen';
-import TodoDetail from '../screens/tododetail/TodoDetail';
-import Register from '../screens/auth/Register';
-import Login from '../screens/auth/Login';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Image, Text, View } from 'react-native';
 
-const Stack = createNativeStackNavigator();
+import TodoListStack from './TodoListStack';
+import AuthStack from './AuthStack';
+
+const Tabs = createBottomTabNavigator()
+
+const iconList = require('../assets/icons/tabs/list.png')
+const iconProfil = require('../assets/icons/tabs/user.png')
 
 export default function AppRouter() {
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="spashscreen" headerMode="None" mode="modal" screenOptions={{headerShown: false}}>
-        <Stack.Screen name="spashscreen" component={SplashScreen} />
-        <Stack.Screen name="register" component={Register} />
-        <Stack.Screen name="login" component={Login} />
-        <Stack.Screen name="todolist" component={TodoList} />
-        <Stack.Screen name="tododetail" component={TodoDetail} />
-      </Stack.Navigator>
+      <Tabs.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
+        <Tabs.Screen 
+          name="tab-todolist"
+          component={TodoListStack}
+          options={{ 
+            tabBarIcon: ({ focused }) => (
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Image
+                  source={iconList}
+                  resizeMode='contain'
+                  style={{ width: 25, height: 25, tintColor: focused ? '#028302' : '#748c94' }}
+                />
+                <Text style={{ color: focused ? '#028302' : '#748c94', fontSize: 12 }}>TODO-LIST</Text>
+              </View>
+            )
+          }}
+        />
+        
+        <Tabs.Screen 
+            name="tab-profil"
+            component={AuthStack}
+            options={{ 
+              tabBarIcon: ({ focused }) => (
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <Image
+                    source={iconProfil}
+                    resizeMode='contain'
+                    style={{ width: 25, height: 25, tintColor: focused ? '#028302' : '#748c94' }}
+                  />
+                  <Text style={{ color: focused ? '#028302' : '#748c94', fontSize: 12 }}>PROFILE</Text>
+                </View>
+              )
+            }}
+          />
+      </Tabs.Navigator>
     </NavigationContainer>
   )
 }

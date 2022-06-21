@@ -16,13 +16,9 @@ export default function Register({ navigation }) {
     if (password === passwordConfirm) {
       try {
         const userCredentials = await createUserWithEmailAndPassword(auth, email, password)
-        const userFb = userCredentials.user
-        const user = {
-          id: userFb.uid,
-          email: userFb.email
+        if (userCredentials.operationType === 'signIn') {
+          navigation.navigate('login', {register: true})
         }
-        const token = JWT.encode({ user: user }, process.env.REACT_APP_TOKEN, { algorithm: 'HS512' })
-        await AsyncStorage.setItem('token', token)
       } catch (e) {
         console.log(e)
       }

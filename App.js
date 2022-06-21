@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import AppRouter from './src/router/AppRouter';
 import { useFonts } from 'expo-font';
 import { ActivityIndicator } from 'react-native';

@@ -17,11 +17,17 @@ export default function SplashScreen({ navigation, route }) {
       const user = JWT.decode(token, process.env.REACT_APP_TOKEN)
       userActions.loadUser(user)
       navigation.navigate('todolist')
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'tab-profil' }]
+      })
     }
   }
 
   useEffect(() => {
     checkJWT()
+    console.log('splash')
   }, [])
 
   return null

@@ -1,14 +1,45 @@
-import { View, Text, KeyboardAvoidingView, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, KeyboardAvoidingView, StyleSheet, TextInput, TouchableOpacity, ToastAndroid } from 'react-native'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../../../firebase'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import JWT from 'expo-jwt';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, route }) {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = () => {
+  useEffect(() => {
     console.log('login')
+  }, [])
+
+  useEffect(() => {
+    if (route.params) {
+      if (route.params.register) {
+        ToastAndroid.show('Compte créé avec succès', ToastAndroid.SHORT)
+      }
+    }
+  }, [])
+
+  const handleLogin = async () => {
+    try {
+      const userCredentials = await signInWithEmailAndPassword(auth, email, password)
+      const userFb = userCredentials.user
+      const user = {
+        id: userFb.uid,
+        email: userFb.email
+      }
+      const token = JWT.encode({ user: user }, process.env.REACT_APP_TOKEN, { algorithm: 'HS512' })
+      await AsyncStorage.setItem('token', token)
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'tab-todolist'}]
+      })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   const gotToRegister = () => {
