@@ -8,7 +8,7 @@ import { db } from '../../../../firebase';
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import uuid from 'react-native-uuid';
 
-export default function TaskForm({ list, setAddTodo, showForm, setShowForm }) {
+export default function TaskForm({ list, setAddTodo, showForm, setShowForm, setLoading }) {
 
   const storage = getStorage();
 
@@ -33,14 +33,19 @@ export default function TaskForm({ list, setAddTodo, showForm, setShowForm }) {
 
   const addTask = async () => {
 
+    setLoading(true)
+
+    let imagePath = 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg'
+    let imageName = 'default'
+
     if (image) {
       const response = await fetch(image)
       const blob = await response.blob()
 
       // Renomme et updload l'image sur firebase
-      const imageName = uuid.v4() + '.jpg'
+      imageName = uuid.v4() + '.jpg'
       // const imagePath = `gs://todolist-rn-4910c.appspot.com/${imageName}`
-      const imagePath = `https://firebasestorage.googleapis.com/v0/b/todolist-rn-4910c.appspot.com/o/images%2F${imageName}?alt=media`
+      imagePath = `https://firebasestorage.googleapis.com/v0/b/todolist-rn-4910c.appspot.com/o/images%2F${imageName}?alt=media`
       const imageRef = ref(storage, `images/${imageName}`)
       // const metadata = {
       //   contentType: 'image/jpeg',
@@ -57,7 +62,9 @@ export default function TaskForm({ list, setAddTodo, showForm, setShowForm }) {
       description,
       // image: image !== null ? image : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
       // image: image !== null ? imageName : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
-      image: image !== null ? imagePath : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+      // image: image !== null ? imagePath : 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg',
+      image: imagePath,
+      imageName,
       status: 0,
       level: levelSelect,
       userId: user.uid,

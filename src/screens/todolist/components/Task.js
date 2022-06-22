@@ -4,8 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import useTodo from '../../../hooks/useTodo';
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from '../../../../firebase';
+import { getStorage, ref, deleteObject } from "firebase/storage";
 
 export default function Task({ task, index, list, setList, setDeleted }) {
+
+  const storage = getStorage();
 
   const navigation = useNavigation();
   const { checked, deleteTask } = useTodo()
@@ -28,6 +31,11 @@ export default function Task({ task, index, list, setList, setDeleted }) {
   const removeTask = async () => {
     // const newList = deleteTask(list, index)
     // setList(newList)
+
+    if (task.imageName !== 'default') {
+      const desertRef = ref(storage, `images/${task.imageName}`);
+      await deleteObject(desertRef)
+    }
 
     await deleteDoc(doc(db, "todos", task.docId));
     setDeleted(true)

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Alert, TouchableHighlight } from 'react-native'
+import { View, Text, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Alert, TouchableHighlight, ActivityIndicator } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import Task from './components/Task'
 import Compteur from './components/Compteur'
@@ -22,6 +22,7 @@ export default function TodoList({ navigation, route }) {
   const [addTodo, setAddTodo] = useState(false)
   const [reload, setReload] = useState(false)
   const [deleted, setDeleted] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     todolistFromDB()
@@ -33,6 +34,7 @@ export default function TodoList({ navigation, route }) {
       todolistFromDB()
       setAddTodo(false)
       setReload(false)
+      setDeleted(false)
     }
   }, [addTodo, reload, deleted])
 
@@ -49,6 +51,7 @@ export default function TodoList({ navigation, route }) {
       todoListTemp.push(data)
     })
     setList(todoListTemp)
+    setLoading(false)
   }
 
   const openForm = () => {
@@ -101,6 +104,14 @@ export default function TodoList({ navigation, route }) {
     }
   }, [route.params])
 
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <FlatList 
@@ -109,7 +120,7 @@ export default function TodoList({ navigation, route }) {
             <View style={styles.containerHeader}>
               <Text style={styles.titleHeader}>Ma Todo List</Text>
             </View>
-            {showForm && <TaskForm list={list} setAddTodo={setAddTodo} showForm={showForm} setShowForm={setShowForm} />}
+            {showForm && <TaskForm list={list} setAddTodo={setAddTodo} setLoading={setLoading} showForm={showForm} setShowForm={setShowForm} />}
             <View style={styles.containerCpts}>
               <Compteur position={'left'} title={'Total tâches'} nb={list.length} />
               <Compteur position={'right'} title={'Tâches réalisées'} nb={list.filter(task => task.status === 1).length} />
@@ -169,4 +180,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginVertical: 10
   },
+  loader: {
+    flex: 1,
+    justifyContent: "center"
+  }
 })
