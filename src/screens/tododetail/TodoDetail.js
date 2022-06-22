@@ -1,12 +1,16 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import useTodo from '../../hooks/useTodo'
+import { getStorage, ref } from "firebase/storage";
 
 export default function TodoDetail({ navigation, route }) {
 
   const { task, index, list } = route.params
 
-  console.log(task)
+  if (task.image !== 'https://www.edialog.fr/ged/content/AD5BA6F3-E8E7-4986-A7D8-E6FDFC054D15.jpg') {
+    const storage = getStorage()
+    ref(storage, `${task.image}`)
+  }
 
   const { deleteTask, checked } = useTodo()
 

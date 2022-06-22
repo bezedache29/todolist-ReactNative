@@ -6187,6 +6187,11 @@ react-native-select-dropdown@^2.0.1:
   resolved "https://registry.npmjs.org/react-native-select-dropdown/-/react-native-select-dropdown-2.0.1.tgz"
   integrity sha512-0l4vlwlbQP43OU597x8D+90bh4SiTCYalhRkSBU7dFWkob2YT37Ku9ty1bsIDgJZNSlVfNC8JOJdQX9A2w1i3Q==
 
+react-native-uuid@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-uuid/-/react-native-uuid-2.0.1.tgz#ed4e2dfb1683eddb66967eb5dca140dfe1abddb9"
+  integrity sha512-cptnoIbL53GTCrWlb/+jrDC6tvb7ypIyzbXNJcpR3Vab0mkeaaVd5qnB3f0whXYzS+SMoSQLcUUB0gEWqkPC0g==
+
 react-native-web@0.17.7:
   version "0.17.7"
   resolved "https://registry.npmjs.org/react-native-web/-/react-native-web-0.17.7.tgz"
